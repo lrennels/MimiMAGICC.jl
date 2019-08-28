@@ -1,4 +1,8 @@
-using Mimi
+#The function 'interact' accounts for the overlap in CH4 and N2O in their absoprtion bands
+function interact(M, N)
+    d = 1.0 + 0.636 * ((M * N)/(10^6))^0.75 + 0.007 * (M/(10^3)) * ((M * N)/(10^6))^1.52
+    return 0.47 * log(d)
+end
 
 @defcomp rfch4magicc begin
     N₂O_0              = Parameter() #preindustrial nitrous oxide
@@ -13,29 +17,19 @@ using Mimi
     QCH4H2O         = Variable(index=[time]) #Additional indirect CH4 forcing due to production of stratospheric H20 from CH4 oxidation
     QMeth           = Variable(index=[time]) #direct radiative forcing from atmospheric ch4 concentrations only
 
-end
+    function run_timestep(p, v, d, t)
+        #direct radiative forcing from atmospheric ch4 concentrations only
+        QCH4 = 0.036 * (sqrt(p.CH4[t]) - sqrt(p.CH4_0))
     
-#The function 'interact' accounts for the overlap in CH4 and N2O in their absoprtion bands
-function interact(M, N)
-    d = 1.0 + 0.636 * ((M * N)/(10^6))^0.75 + 0.007 * (M/(10^3)) * ((M * N)/(10^6))^1.52
-    return 0.47 * log(d)
-end
-
-function run_timestep(s::rfch4magicc, t::Int)
-    v = s.Variables
-    p = s.Parameters
-
-
-    #direct radiative forcing from atmospheric ch4 concentrations only
-    QCH4 = 0.036 * (sqrt(p.CH4[t]) - sqrt(p.CH4_0))
-
-    v.QMeth[t] = (QCH4 - (interact(p.CH4[t], p.N₂O_0) - interact(p.CH4_0, p.N₂O_0))) * p.scale_CH₄
-
-    #Calculate indirect CH4 forcing due to production of stratospheric H20 from CH4 oxidation
-    v.QCH4H2O[t] = p.STRATH2O * QCH4
-
-    #Calculate enhnacement of direct CH4 forcing due to ch4-induced ozone production
-    #NOTE: Old concentration based equation added 2000 O₃ focring due to CH₄. This term was removed for emissions version.
-    v.QCH4OZ[t] = p.TROZSENS * p.OZCH4 * log(p.CH4[t]/p.CH4_0)
+        v.QMeth[t] = (QCH4 - (interact(p.CH4[t], p.N₂O_0) - interact(p.CH4_0, p.N₂O_0))) * p.scale_CH₄
+    
+        #Calculate indirect CH4 forcing due to production of stratospheric H20 from CH4 oxidation
+        v.QCH4H2O[t] = p.STRATH2O * QCH4
+    
+        #Calculate enhnacement of direct CH4 forcing due to ch4-induced ozone production
+        #NOTE: Old concentration based equation added 2000 O₃ focring due to CH₄. This term was removed for emissions version.
+        v.QCH4OZ[t] = p.TROZSENS * p.OZCH4 * log(p.CH4[t]/p.CH4_0)
+    
+    end
 
 end
