@@ -31,8 +31,8 @@
     function run_timestep(p, v, d, t)
 
         # Set initial conditions. NOTE: The CH₄ cycle equations require temperature values from the previous two timesteps (t-1 and t-2), so the cycle switches
-            # on starting in timestep 3. Further, timestep 1 CH₄ concentrations do not affect timestep 1 temperature or the results below (but timestep 2 CH₄
-            # concentrations do). We therefore treat period 2 CH₄ concentrations as an initial (and uncertain) condition.
+            # on starting in timestep 3. Further, timestep 1 CH₄ concentrations do not affect the results below (but timestep 2 CH₄ concentrations do). We
+            # therefore treat period 2 CH₄ concentrations as an initial (and uncertain) condition.
         if t.t <= 2
             v.CH₄[2] = p.CH₄_0
             v.emeth[t] = 0.0
