@@ -18,7 +18,7 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     # Load and clean up necessary data.
     # ---------------------------------------------
 
-    # Load RCP emissions and concentration scenario values (RCP options = "RCP26", "RCP45", "RCP60", and "RCP85").
+    # Load RCP emissions and concentration scenario values (RCP options = "RCP26" or "RCP85").
     rcp_emissions      = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario*"_EMISSIONS.csv"), skiplines_begin=36))
     rcp_concentrations = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario*"_CONCENTRATIONS.csv"), skiplines_begin=37))
 
