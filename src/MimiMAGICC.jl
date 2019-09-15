@@ -41,7 +41,7 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     # Get index for year 2000 given model time horizon.
     index_2000 = findall(x -> x == 2000, start_year:end_year)[1]
 
-  	# ---------------------------------------------
+    # ---------------------------------------------
     # Initialize Mimi model.
     # ---------------------------------------------
 
@@ -59,7 +59,7 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     add_comp!(m, rf_ch4h2o)
     add_comp!(m, rf_o3)
 
-	# ---------------------------------------------
+    # ---------------------------------------------
     # Set component parameters.
     # ---------------------------------------------
 
@@ -83,7 +83,7 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     set_param!(m, :ch4_cycle, :CO_emissions, rcp_emissions.CO)
     set_param!(m, :ch4_cycle, :NMVOC_emissions, rcp_emissions.NMVOC)
 
-	# ---- Methane Radiative Forcing ---- #
+    # ---- Methane Radiative Forcing ---- #
     set_param!(m, :rf_ch4, :N₂O_0, N₂O_0)
     set_param!(m, :rf_ch4, :CH₄_0, CH₄_0)
     set_param!(m, :rf_ch4, :scale_CH₄, 1.0)
@@ -107,7 +107,7 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     set_param!(m, :rf_o3, :TROZSENS, 0.042)
     set_param!(m, :rf_o3, :OZCH4, 5.0)
 
- 	# ---------------------------------------------
+    # ---------------------------------------------
     # Create connections between Mimi components.
     # ---------------------------------------------
     connect_param!(m, :rf_ch4,    :CH₄, :ch4_cycle, :CH₄)
