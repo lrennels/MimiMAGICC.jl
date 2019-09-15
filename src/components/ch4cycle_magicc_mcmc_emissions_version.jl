@@ -15,7 +15,7 @@
     GAM               = Parameter()             # Hydroxyl lifetime parameter.
     CH4_natural       = Parameter()             # Natural methane emissions (Mt yr⁻¹).
     fffrac            = Parameter()             # Fossil fuel fraction of total methane emissions.
-    CH4_0             = Parameter()             # Atmospheric methane pre-industrial concentration (ppb).
+    CH₄_0             = Parameter()             # Atmospheric methane pre-industrial concentration (ppb).
     index_2000::Int64 = Parameter()             # Index to access values in the year 2000 (just for convenience).
     temperature       = Parameter(index=[time]) # Global surface temperature anomaly (°C).
     CH4_emissions     = Parameter(index=[time]) # Global anthropogenic methane emissions (Mt yr⁻¹).
@@ -24,7 +24,7 @@
     NMVOC_emissions   = Parameter(index=[time]) # Global non-methane volatile organic compound emissions (Mt yr⁻¹).
 
     TAU_OH            = Variable(index=[time])  # Methane tropospheric lifetime due to hydroxyl abundance (years).
-    CH4               = Variable(index=[time])  # Atmospheric methane concetration for current period (ppb).
+    CH₄               = Variable(index=[time])  # Atmospheric methane concetration for current period (ppb).
     emeth             = Variable(index=[time])  # Methane that has been oxidized to carbon dioxide.
 
 
@@ -34,7 +34,7 @@
             # on starting in timestep 3. Further, timestep 1 CH₄ concentrations do not affect timestep 1 temperature or the results below (but timestep 2 CH₄
             # concentrations do). We therefore treat period 2 CH₄ concentrations as an initial (and uncertain) condition.
         if t.t <= 2
-            v.CH4[2] = p.CH4_0
+            v.CH₄[2] = p.CH₄_0
             v.emeth[t] = 0.0
         else
 
@@ -64,10 +64,10 @@
             ##########################################################
 
             # Convert previous timestep concentration to mass.
-            B = v.CH4[t-1] * p.BBCH4
+            B = v.CH₄[t-1] * p.BBCH4
 
             # Convert historical concentration to mass.
-            B00 = p.CH4_0 * p.BBCH4
+            B00 = p.CH₄_0 * p.BBCH4
 
             # Account for other gases on OH abundance and tropospheric methane lifetime.
             AAA = exp(p.GAM * (p.ANOX*DENOX + p.ACO*DECO + p.AVOC*DEVOC))
@@ -123,10 +123,10 @@
             v.TAU_OH[t] = TAUBAR
 
             # Calculate CH₄ concentration.
-            v.CH4[t] = B4 / p.BBCH4
+            v.CH₄[t] = B4 / p.BBCH4
 
             #Calculate additional CO₂ emissions due to CH₄ oxidation.
-            v.emeth[t] = p.fffrac * 0.0020625 * (v.CH4[t] - 700.0) / p.TAUINIT
+            v.emeth[t] = p.fffrac * 0.0020625 * (v.CH₄[t] - 700.0) / p.TAUINIT
         end
     end
 end
