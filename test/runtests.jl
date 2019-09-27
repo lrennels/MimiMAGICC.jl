@@ -2,8 +2,8 @@ using Test
 using CSVFiles
 using DataFrames
 using Mimi
+using MimiMAGICC
 
-include("../src/MimiMAGICC.jl")
 @testset "MAGICC" begin
 
 #------------------------------------------------------------------------------
