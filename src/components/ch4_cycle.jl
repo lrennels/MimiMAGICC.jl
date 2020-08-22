@@ -16,7 +16,6 @@
     CH4_natural       = Parameter()             # Natural methane emissions (Mt yr⁻¹).
     fffrac            = Parameter()             # Fossil fuel fraction of total methane emissions.
     CH₄_0             = Parameter()             # Atmospheric methane pre-industrial concentration (ppb).
-    index_2000::Int64 = Parameter()             # Index to access values in the year 2000 (just for convenience).
     temperature       = Parameter(index=[time]) # Global surface temperature anomaly (°C).
     CH4_emissions     = Parameter(index=[time]) # Global anthropogenic methane emissions (Mt yr⁻¹).
     NOX_emissions     = Parameter(index=[time]) # Global nitrogen oxides emissions (Mt yr⁻¹).
@@ -33,24 +32,24 @@
         # Set initial conditions. NOTE: The CH₄ cycle equations require temperature values from the previous two timesteps (t-1 and t-2), so the cycle switches
             # on starting in timestep 3. Further, timestep 1 CH₄ concentrations do not affect the results below (but timestep 2 CH₄ concentrations do). We
             # therefore treat period 2 CH₄ concentrations as an initial (and uncertain) condition.
-        if t.t <= 2
-            v.CH₄[2] = p.CH₄_0
+        if t <= TimestepIndex(2)
+            v.CH₄[TimestepIndex(2)] = p.CH₄_0
             v.emeth[t] = 0.0
         else
 
             # Calculate changes for temperature sensitivity equation (maintain MAGICC's original scaling relative to increase above 2000).
-            if gettime(t) < 2000
+            if t < TimestepValue(2000)
                 D_Temp = 0.0
             else
-                DELT00 = 2.0 * p.temperature[p.index_2000-1] - p.temperature[p.index_2000-2]
+                DELT00 = 2.0 * p.temperature[TimestepValue(2000)-1] - p.temperature[TimestepValue(2000)-2]
                 TX = 2.0 * p.temperature[t-1] - p.temperature[t-2]
                 D_Temp = TX - DELT00
             end
 
             # Calculate change in emissions for NOx, CO, and NMVOC (relative to period 3 when CH₄ cycle model engages due to t-1 and t-2 terms above).
-            DENOX = p.NOX_emissions[t] - p.NOX_emissions[3]
-            DECO  = p.CO_emissions[t] - p.CO_emissions[3]
-            DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[3]
+            DENOX = p.NOX_emissions[t] - p.NOX_emissions[TimestepIndex(3)]
+            DECO  = p.CO_emissions[t] - p.CO_emissions[TimestepIndex(3)]
+            DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[TimestepIndex(3)]
 
             # Add natural CH₄ emissions to anthropogenic CH₄ emissions.
             Total_CH4emissions = p.CH4_emissions[t] + p.CH4_natural

@@ -38,9 +38,6 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     CH₄_0 = rcp_concentrations[1, :CH4]
     N₂O_0 = rcp_concentrations[1, :N2O]
 
-    # Get index for year 2000 given model time horizon.
-    index_2000 = findall(x -> x == 2000, start_year:end_year)[1]
-
     # ---------------------------------------------
     # Initialize Mimi model.
     # ---------------------------------------------
@@ -64,7 +61,6 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     # ---------------------------------------------
 
     # ---- Methane Cycle ---- #
-    set_param!(m, :ch4_cycle, :index_2000, index_2000)
     set_param!(m, :ch4_cycle, :BBCH4, 2.78)
     set_param!(m, :ch4_cycle, :ANOX, 0.0042)
     set_param!(m, :ch4_cycle, :ACO, -0.000105)
@@ -99,7 +95,6 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     set_param!(m, :rf_o3, :OZNOX, 0.125)
     set_param!(m, :rf_o3, :OZCO, 0.0011)
     set_param!(m, :rf_o3, :OZVOC, 0.0033)
-    set_param!(m, :rf_o3, :index_2000, index_2000)
     set_param!(m, :rf_o3, :NOx_emissions, rcp_emissions.NOx)
     set_param!(m, :rf_o3, :CO_emissions, rcp_emissions.CO)
     set_param!(m, :rf_o3, :NMVOC_emissions, rcp_emissions.NMVOC)
