@@ -18,7 +18,7 @@
     CH₄_0             = Parameter()             # Atmospheric methane pre-industrial concentration (ppb).
     temperature       = Parameter(index=[time]) # Global surface temperature anomaly (°C).
     CH4_emissions     = Parameter(index=[time]) # Global anthropogenic methane emissions (Mt yr⁻¹).
-    NOX_emissions     = Parameter(index=[time]) # Global nitrogen oxides emissions (Mt yr⁻¹).
+    NOx_emissions     = Parameter(index=[time]) # Global nitrogen oxides emissions (Mt yr⁻¹).
     CO_emissions      = Parameter(index=[time]) # Global carbon monoxide emissions (Mt yr⁻¹).
     NMVOC_emissions   = Parameter(index=[time]) # Global non-methane volatile organic compound emissions (Mt yr⁻¹).
 
@@ -47,7 +47,7 @@
             end
 
             # Calculate change in emissions for NOx, CO, and NMVOC (relative to period 3 when CH₄ cycle model engages due to t-1 and t-2 terms above).
-            DENOX = p.NOX_emissions[t] - p.NOX_emissions[TimestepIndex(3)]
+            DENOX = p.NOx_emissions[t] - p.NOx_emissions[TimestepIndex(3)]
             DECO  = p.CO_emissions[t] - p.CO_emissions[TimestepIndex(3)]
             DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[TimestepIndex(3)]
 
