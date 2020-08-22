@@ -72,35 +72,30 @@ function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, e
     set_param!(m, :ch4_cycle, :GAM, -1.0)
     set_param!(m, :ch4_cycle, :CH4_natural, 266.5)
     set_param!(m, :ch4_cycle, :fffrac, 0.18)
-    set_param!(m, :ch4_cycle, :CH₄_0, CH₄_0)
     set_param!(m, :ch4_cycle, :temperature, rcp_temperature.Temperature)
     set_param!(m, :ch4_cycle, :CH4_emissions, rcp_emissions.CH4)
-    set_param!(m, :ch4_cycle, :NOX_emissions, rcp_emissions.NOx)
-    set_param!(m, :ch4_cycle, :CO_emissions, rcp_emissions.CO)
-    set_param!(m, :ch4_cycle, :NMVOC_emissions, rcp_emissions.NMVOC)
 
     # ---- Methane Radiative Forcing ---- #
     set_param!(m, :rf_ch4, :N₂O_0, N₂O_0)
-    set_param!(m, :rf_ch4, :CH₄_0, CH₄_0)
     set_param!(m, :rf_ch4, :scale_CH₄, 1.0)
 
     # ---- Straospheric Water Vapor From Methane Radiative Forcing ---- #
-    set_param!(m, :rf_ch4h2o, :CH₄_0, CH₄_0)
     set_param!(m, :rf_ch4h2o, :STRATH2O, 0.15)
 
     # ---- Tropospheric Ozone Radiative Forcing ---- #
-    set_param!(m, :rf_o3, :CH₄_0, CH₄_0)
     set_param!(m, :rf_o3, :OZ00CH4, 0.161)
     set_param!(m, :rf_o3, :TROZSENS, 0.042)
     set_param!(m, :rf_o3, :OZNOX, 0.125)
     set_param!(m, :rf_o3, :OZCO, 0.0011)
     set_param!(m, :rf_o3, :OZVOC, 0.0033)
-    set_param!(m, :rf_o3, :NOx_emissions, rcp_emissions.NOx)
-    set_param!(m, :rf_o3, :CO_emissions, rcp_emissions.CO)
-    set_param!(m, :rf_o3, :NMVOC_emissions, rcp_emissions.NMVOC)
     set_param!(m, :rf_o3, :FOSSHIST, foss_hist_for_O₃.EFOSS)
-    set_param!(m, :rf_o3, :TROZSENS, 0.042)
     set_param!(m, :rf_o3, :OZCH4, 5.0)
+
+    # ---- Common parameters ----
+    set_param!(m, :CH₄_0, CH₄_0)
+    set_param!(m, :NOx_emissions, rcp_emissions.NOx)
+    set_param!(m, :CO_emissions, rcp_emissions.CO)
+    set_param!(m, :NMVOC_emissions, rcp_emissions.NMVOC)
 
     # ---------------------------------------------
     # Create connections between Mimi components.
