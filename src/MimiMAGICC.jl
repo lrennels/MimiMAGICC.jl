@@ -9,10 +9,7 @@ include("components/rf_ch4.jl")
 include("components/rf_ch4h2o.jl")
 include("components/rf_o3.jl")
 
-
-export get_magicc_ch4
-
-function get_magicc_ch4(;rcp_scenario::String="RCP85", start_year::Int64=1765, end_year::Int64=2300)
+function get_model(;rcp_scenario::String="RCP85", start_year::Int64=1765, end_year::Int64=2300)
 
     # ---------------------------------------------
     # Load and clean up necessary data.
