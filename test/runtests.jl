@@ -12,7 +12,7 @@ using MimiMAGICC
 
     @testset "MAGICC-model" begin
 
-    m = MimiMAGICC.get_magicc_ch4()
+    m = MimiMAGICC.get_model()
     run(m)
 
     end # MAGICC-CH4 model run test.
