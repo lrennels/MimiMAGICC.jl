@@ -9,7 +9,7 @@ include("components/rf_ch4.jl")
 include("components/rf_ch4h2o.jl")
 include("components/rf_o3.jl")
 
-function get_model(;rcp_scenario::String="RCP85", start_year::Int64=1765, end_year::Int64=2300)
+function get_model(;rcp_scenario::String="RCP85", start_year::Int=1765, end_year::Int=2300)
 
     # ---------------------------------------------
     # Load and clean up necessary data.
