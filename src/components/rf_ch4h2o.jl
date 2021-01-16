@@ -13,12 +13,12 @@
 
     function run_timestep(p, v, d, t)
 
-        if is_first(t)
+    if is_first(t)
             # Set initial forcing to 0.
-            v.QCH4H2O[t] = 0.0
-        else
+        v.QCH4H2O[t] = 0.0
+    else
             # Calculate indirect CH₄ forcing due to stratoshperic water vapor production from CH₄ oxidation.
-            v.QCH4H2O[t] = p.STRATH2O * (0.036 * (sqrt(p.CH₄[t]) - sqrt(p.CH₄_0)))
-        end
+        v.QCH4H2O[t] = p.STRATH2O * (0.036 * (sqrt(p.CH₄[t]) - sqrt(p.CH₄_0)))
     end
+end
 end

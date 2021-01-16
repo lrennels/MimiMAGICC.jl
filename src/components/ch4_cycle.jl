@@ -32,30 +32,30 @@
         # Set initial conditions. NOTE: The CH₄ cycle equations require temperature values from the previous two timesteps (t-1 and t-2), so the cycle switches
             # on starting in timestep 3. Further, timestep 1 CH₄ concentrations do not affect the results below (but timestep 2 CH₄ concentrations do). We
             # therefore treat period 2 CH₄ concentrations as an initial (and uncertain) condition.
-        if t <= TimestepIndex(2)
-            v.CH₄[TimestepIndex(2)] = p.CH₄_0
-            v.emeth[t] = 0.0
-        else
+    if t <= TimestepIndex(2)
+        v.CH₄[TimestepIndex(2)] = p.CH₄_0
+        v.emeth[t] = 0.0
+    else
 
             # Calculate changes for temperature sensitivity equation (maintain MAGICC's original scaling relative to increase above 2000).
-            if t < TimestepValue(2000)
-                D_Temp = 0.0
-            else
-                DELT00 = 2.0 * p.temperature[TimestepValue(2000)-1] - p.temperature[TimestepValue(2000)-2]
-                TX = 2.0 * p.temperature[t-1] - p.temperature[t-2]
-                D_Temp = TX - DELT00
-            end
+        if t < TimestepValue(2000)
+            D_Temp = 0.0
+        else
+            DELT00 = 2.0 * p.temperature[TimestepValue(2000) - 1] - p.temperature[TimestepValue(2000) - 2]
+            TX = 2.0 * p.temperature[t - 1] - p.temperature[t - 2]
+            D_Temp = TX - DELT00
+        end
 
             # Calculate change in emissions for NOx, CO, and NMVOC (relative to period 3 when CH₄ cycle model engages due to t-1 and t-2 terms above).
-            DENOX = p.NOx_emissions[t] - p.NOx_emissions[TimestepIndex(3)]
-            DECO  = p.CO_emissions[t] - p.CO_emissions[TimestepIndex(3)]
-            DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[TimestepIndex(3)]
+        DENOX = p.NOx_emissions[t] - p.NOx_emissions[TimestepIndex(3)]
+        DECO  = p.CO_emissions[t] - p.CO_emissions[TimestepIndex(3)]
+        DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[TimestepIndex(3)]
 
             # Add natural CH₄ emissions to anthropogenic CH₄ emissions.
-            Total_CH4emissions = p.CH4_emissions[t] + p.CH4_natural
+        Total_CH4emissions = p.CH4_emissions[t] + p.CH4_natural
 
             # Calcualte TAUOTHER term (based on stratospheric and soil sink lifetimes).
-            TAUOTHER = 1.0 / (1.0/p.TAUSOIL + 1.0/p.TAUSTRAT)
+        TAUOTHER = 1.0 / (1.0 / p.TAUSOIL + 1.0 / p.TAUSTRAT)
 
             ##########################################################
             # Iterate to Calculate OH lifetime and CH₄ concentration.
@@ -63,69 +63,69 @@
             ##########################################################
 
             # Convert previous timestep concentration to mass.
-            B = v.CH₄[t-1] * p.BBCH4
+        B = v.CH₄[t - 1] * p.BBCH4
 
             # Convert historical concentration to mass.
-            B00 = p.CH₄_0 * p.BBCH4
+        B00 = p.CH₄_0 * p.BBCH4
 
             # Account for other gases on OH abundance and tropospheric methane lifetime.
-            AAA = exp(p.GAM * (p.ANOX*DENOX + p.ACO*DECO + p.AVOC*DEVOC))
+        AAA = exp(p.GAM * (p.ANOX * DENOX + p.ACO * DECO + p.AVOC * DEVOC))
 
             # Multiply two parameters together.
-            X = p.GAM * p.SCH4
+        X = p.GAM * p.SCH4
 
             # Multiply initial tropospheric lifetime by AAA.
-            U = p.TAUINIT * AAA
+        U = p.TAUINIT * AAA
 
             # Iterate to calculate a final CH₄ tropospheric lifetime (accounting for a temperature feedback).
 
-            #----------------------------------------
+            # ----------------------------------------
             # FIRST ITERATION
-            #----------------------------------------
-            BBAR = B
-            TAUBAR = U * (BBAR/B00) ^ X
-            TAUBAR = p.TAUINIT / (p.TAUINIT/TAUBAR + 0.0316 * D_Temp)
-            DB1 = Total_CH4emissions - (BBAR/TAUBAR) - (BBAR/TAUOTHER)
-            B1 = B + DB1
+            # ----------------------------------------
+        BBAR = B
+        TAUBAR = U * (BBAR / B00)^X
+        TAUBAR = p.TAUINIT / (p.TAUINIT / TAUBAR + 0.0316 * D_Temp)
+        DB1 = Total_CH4emissions - (BBAR / TAUBAR) - (BBAR / TAUOTHER)
+        B1 = B + DB1
 
-            #----------------------------------------
+            # ----------------------------------------
             # SECOND ITERATION
-            #----------------------------------------
-            BBAR = (B + B1) / 2.0
-            TAUBAR = U * (BBAR/B00) ^ X
-            TAUBAR = TAUBAR * (1.0 - 0.5 * X * DB1/B)
-            TAUBAR = p.TAUINIT / (p.TAUINIT/TAUBAR + 0.0316 * D_Temp)
-            DB2 = Total_CH4emissions - (BBAR/TAUBAR) - (BBAR/TAUOTHER)
-            B2 = B + DB2
+            # ----------------------------------------
+        BBAR = (B + B1) / 2.0
+        TAUBAR = U * (BBAR / B00)^X
+        TAUBAR = TAUBAR * (1.0 - 0.5 * X * DB1 / B)
+        TAUBAR = p.TAUINIT / (p.TAUINIT / TAUBAR + 0.0316 * D_Temp)
+        DB2 = Total_CH4emissions - (BBAR / TAUBAR) - (BBAR / TAUOTHER)
+        B2 = B + DB2
 
-            #----------------------------------------
+            # ----------------------------------------
             # THIRD ITERATION
-            #----------------------------------------
-            BBAR = (B + B2) / 2.0
-            TAUBAR = U * (BBAR/B00) ^ X
-            TAUBAR = TAUBAR * (1.0 - 0.5 * X * DB2/B)
-            TAUBAR = p.TAUINIT / (p.TAUINIT/TAUBAR + 0.0316 * D_Temp)
-            DB3 = Total_CH4emissions - (BBAR/TAUBAR) - (BBAR/TAUOTHER)
-            B3 = B + DB3
+            # ----------------------------------------
+        BBAR = (B + B2) / 2.0
+        TAUBAR = U * (BBAR / B00)^X
+        TAUBAR = TAUBAR * (1.0 - 0.5 * X * DB2 / B)
+        TAUBAR = p.TAUINIT / (p.TAUINIT / TAUBAR + 0.0316 * D_Temp)
+        DB3 = Total_CH4emissions - (BBAR / TAUBAR) - (BBAR / TAUOTHER)
+        B3 = B + DB3
 
-            #----------------------------------------
+            # ----------------------------------------
             # FOURTH ITERATION
-            #----------------------------------------
-            BBAR = (B + B3) / 2.0
-            TAUBAR = U * (BBAR/B00) ^ X
-            TAUBAR = TAUBAR * (1.0 - 0.5 * X * DB3/B)
-            TAUBAR = p.TAUINIT / (p.TAUINIT/TAUBAR + 0.0316 * D_Temp)
-            DB4 = Total_CH4emissions - (BBAR/TAUBAR) - (BBAR/TAUOTHER)
-            B4 = B + DB4
+            # ----------------------------------------
+        BBAR = (B + B3) / 2.0
+        TAUBAR = U * (BBAR / B00)^X
+        TAUBAR = TAUBAR * (1.0 - 0.5 * X * DB3 / B)
+        TAUBAR = p.TAUINIT / (p.TAUINIT / TAUBAR + 0.0316 * D_Temp)
+        DB4 = Total_CH4emissions - (BBAR / TAUBAR) - (BBAR / TAUOTHER)
+        B4 = B + DB4
 
             # Calculate CH₄ tropospheric lifetime.
-            v.TAU_OH[t] = TAUBAR
+        v.TAU_OH[t] = TAUBAR
 
             # Calculate CH₄ concentration.
-            v.CH₄[t] = B4 / p.BBCH4
+        v.CH₄[t] = B4 / p.BBCH4
 
-            #Calculate additional CO₂ emissions due to CH₄ oxidation.
-            v.emeth[t] = p.fffrac * 0.0020625 * (v.CH₄[t] - 700.0) / p.TAUINIT
-        end
+            # Calculate additional CO₂ emissions due to CH₄ oxidation.
+        v.emeth[t] = p.fffrac * 0.0020625 * (v.CH₄[t] - 700.0) / p.TAUINIT
     end
+end
 end

@@ -16,11 +16,11 @@ function get_model(;rcp_scenario::String="RCP85", start_year::Int=1765, end_year
     # ---------------------------------------------
 
     # Load RCP emissions and concentration scenario values (RCP options = "RCP26" or "RCP85").
-    rcp_emissions      = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario*"_EMISSIONS.csv"), skiplines_begin=36))
-    rcp_concentrations = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario*"_CONCENTRATIONS.csv"), skiplines_begin=37))
+    rcp_emissions      = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario * "_EMISSIONS.csv"), skiplines_begin=36))
+    rcp_concentrations = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario * "_CONCENTRATIONS.csv"), skiplines_begin=37))
 
     # Load temperature scenario (mean response from SNEASY across 100,000 posterior parameter samples).
-    rcp_temperature    = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario*"_temperature_sneasy_1765_2300.csv")))
+    rcp_temperature    = DataFrame(load(joinpath(@__DIR__, "..", "data", rcp_scenario * "_temperature_sneasy_1765_2300.csv")))
 
     # Load fossil CO₂ emissions scenario to calculate historic tropospheric O₃ forcing (this scenario is specific to how MAGICC calculates this forcing).
     foss_hist_for_O₃   = DataFrame(load(joinpath(@__DIR__, "..", "data", "FOSS_HIST_magicc.csv")))
@@ -104,4 +104,4 @@ function get_model(;rcp_scenario::String="RCP85", start_year::Int=1765, end_year
     return(m)
 end
 
-end #module
+end # module

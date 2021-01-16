@@ -25,35 +25,35 @@
 
     function run_timestep(p, v, d, t)
 
-        if is_first(t)
+    if is_first(t)
             # Set initial values for O₃ forcing to 0.0.
-            v.QCH4OZ[t] = 0.0
-            v.QOZ[t] = 0.0
-            v.rf_O₃[t] = 0.0
+        v.QCH4OZ[t] = 0.0
+        v.QOZ[t] = 0.0
+        v.rf_O₃[t] = 0.0
 
-        else
+    else
 
             # The CH₄ emission cycle was converted to run on emissions for all time periods (to be able to use CH₄ concentration observations during calibration).
             # The non-methane component of the O₃ cycle follows the original version of MAGICC by switching on the primary emissions equations after year 2000.
-            if gettime(t) < 2000
+        if gettime(t) < 2000
                 # Calculate historic non-CH₄ tropospheric O₃ forcing.
-                v.QOZ[t] = (0.33 - p.OZ00CH4) * (p.FOSSHIST[t] - p.FOSSHIST[TimestepIndex(1)]) / (p.FOSSHIST[TimestepValue(2000)-1] - p.FOSSHIST[TimestepIndex(1)])
+            v.QOZ[t] = (0.33 - p.OZ00CH4) * (p.FOSSHIST[t] - p.FOSSHIST[TimestepIndex(1)]) / (p.FOSSHIST[TimestepValue(2000) - 1] - p.FOSSHIST[TimestepIndex(1)])
 
-            else
+        else
                 # Calculate change in emissions for NOX, CO, and NMVOC relative to 2000.
-                DENOX = p.NOx_emissions[t]   - p.NOx_emissions[TimestepValue(2000)]
-                DECO  = p.CO_emissions[t]    - p.CO_emissions[TimestepValue(2000)]
-                DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[TimestepValue(2000)]
+            DENOX = p.NOx_emissions[t]   - p.NOx_emissions[TimestepValue(2000)]
+            DECO  = p.CO_emissions[t]    - p.CO_emissions[TimestepValue(2000)]
+            DEVOC = p.NMVOC_emissions[t] - p.NMVOC_emissions[TimestepValue(2000)]
 
                 # Calculate tropospheric O₃ radiative forcing not attributed to CH₄.
-                v.QOZ[t] = (0.33 - p.OZ00CH4) + (v.QOZ[TimestepValue(2000)-1] - v.QOZ[TimestepValue(2000)-2]) + p.TROZSENS*(p.OZNOX*DENOX + p.OZCO*DECO + p.OZVOC*DEVOC)
-            end
+            v.QOZ[t] = (0.33 - p.OZ00CH4) + (v.QOZ[TimestepValue(2000) - 1] - v.QOZ[TimestepValue(2000) - 2]) + p.TROZSENS * (p.OZNOX * DENOX + p.OZCO * DECO + p.OZVOC * DEVOC)
+        end
 
             # Calculate indirect CH₄ forcing due to CH₄-induced O₃ production (based on pure emissions version of CH₄ cycle).
-            v.QCH4OZ[t] = p.TROZSENS * p.OZCH4 * log(p.CH₄[t]/p.CH₄_0)
+        v.QCH4OZ[t] = p.TROZSENS * p.OZCH4 * log(p.CH₄[t] / p.CH₄_0)
 
             # Calculate total tropospheric O₃ radiative forcing (from direct O₃ and indirect CH₄ effects).
-            v.rf_O₃[t] = v.QOZ[t] + v.QCH4OZ[t]
-        end
+        v.rf_O₃[t] = v.QOZ[t] + v.QCH4OZ[t]
     end
+end
 end
